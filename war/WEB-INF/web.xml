@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>locationsServlet</servlet-name>
+    <servlet-class>org.netmelody.met2rss.server.LocationServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>locationsServlet</servlet-name>
+    <url-pattern>/met2rss/locations</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>forecastFeedServlet</servlet-name>
+    <servlet-class>org.netmelody.met2rss.server.ForecastFeedServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>forecastFeedServlet</servlet-name>
+    <url-pattern>*.rss</url-pattern>
+  </servlet-mapping>
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>Met2rss.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>
