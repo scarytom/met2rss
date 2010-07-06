@@ -1,0 +1,5 @@
+# use glob syntax.
+syntax: glob
+*.class
+war/met2rss
+war/WEB-INF/classes
