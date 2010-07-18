@@ -15,29 +15,28 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 public final class ForecastFeedGenerator {
 
     public WireFeed createFeedFor(Forecast forecast) {
+        return createFeedFor(forecast, false);
+    }
+    
+    public WireFeed createSimpleFeedFor(Forecast forecast) {
+        return createFeedFor(forecast, true);
+    }
+    
+    private WireFeed createFeedFor(Forecast forecast, boolean simple) {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType("rss_2.0");
         feed.setTitle(forecast.getTitle());
         feed.setLink(forecast.getForecasterUrl());
         feed.setDescription("");
 
-        final List<Prediction> predictions = forecast.predictions();
-        StringBuilder builder = new StringBuilder();
-        if (!predictions.isEmpty()) {
-            builder.append(predictions.get(0).htmlHeader());
-            for(Prediction prediction : forecast.predictions()) {
-                builder.append(prediction.htmlBody());
-            }
-            builder.append(predictions.get(0).htmlFooter());
-        }
-        
         final SyndEntry entry = new SyndEntryImpl();
         entry.setTitle("Forecast");
         entry.setLink(forecast.getForecastUrl());
         entry.setPublishedDate(forecast.getDate());
         
         final SyndContent description = new SyndContentImpl();
-        description.setValue(builder.toString());
+        final String content = createFeedContent(forecast.predictions(), simple);
+        description.setValue(content);
         description.setType("text/html");
         entry.setDescription(description);
 
@@ -47,6 +46,28 @@ public final class ForecastFeedGenerator {
         result.setLastBuildDate(forecast.getDate());
         result.setTtl(60);
         return result;
+    }
+
+    private String createFeedContent(final List<Prediction> predictions, boolean simple) {
+        StringBuilder builder = new StringBuilder();
+        
+        if (predictions.isEmpty()) {
+            return "";
+        }
+        
+        if (simple) {
+            for(Prediction prediction : predictions) {
+                builder.append(prediction.getWeather());
+            }
+        }
+        else {
+            builder.append(predictions.get(0).htmlHeader());
+            for(Prediction prediction : predictions) {
+                builder.append(prediction.htmlBody());
+            }
+            builder.append(predictions.get(0).htmlFooter());
+        }
+        return builder.toString();
     }
 }
 

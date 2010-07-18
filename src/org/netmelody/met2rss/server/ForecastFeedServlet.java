@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sun.syndication.feed.WireFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.WireFeedOutput;
 
@@ -22,11 +23,20 @@ public final class ForecastFeedServlet extends HttpServlet {
         
         String location = req.getRequestURI();
         location = location.replaceAll("\\.rss", "");
+        
+        boolean simple = false;
+        if (location.startsWith("/simple/")) {
+            location = location.substring(7);
+            simple = true;
+        }
+        
         final Forecast forecast = forecaster.forecastFor(location);
 
         WireFeedOutput feedOutputter = new WireFeedOutput();
         try {
-            feedOutputter.output(forecastFeedGenerator.createFeedFor(forecast), resp.getWriter());
+            final WireFeed feed = simple ?
+                    forecastFeedGenerator.createSimpleFeedFor(forecast) : forecastFeedGenerator.createFeedFor(forecast);
+            feedOutputter.output(feed, resp.getWriter());
         }
         catch (FeedException e) {
             throw new IOException("Failed to create feed", e);
